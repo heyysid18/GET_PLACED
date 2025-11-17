@@ -9,7 +9,7 @@
     "postinstall": "npx update-browserslist-db@latest --update-db || true"
   },
   "engines": {
-    "node": ">=14"
+    "node": ">=18 <21"
   },
   "description": "",
   "main": "index.js",
