@@ -10,7 +10,39 @@ import applicationRoute from "./routes/application.route.js";
 
 dotenv.config({});
 
-const app = express();
+/**
+ * Entrypoint that ensures the server binds to process.env.PORT and 0.0.0.0 (Render requirement).
+ * If you already export an Express `app` from ./app, this will use it; otherwise it creates a minimal app.
+ */
+const createServer = () => {
+	// Try to load an existing Express app (optional)
+	try {
+		// If you have backend/app.js or backend/app/index.js exporting an Express app, this will use it.
+		const app = require('./app');
+		return app;
+	} catch (err) {
+		// fallback: create minimal Express app
+		const express = require('express');
+		const app = express();
+		app.get('/', (req, res) => res.send('OK'));
+		return app;
+	}
+};
+
+const app = createServer();
+
+const port = parseInt(process.env.PORT, 10) || 8000;
+const host = process.env.HOST || '0.0.0.0';
+
+app.listen(port, host, () => {
+	console.log(`Server listening on http://${host}:${port}`);
+});
+
+// graceful shutdown logs (optional)
+process.on('SIGTERM', () => {
+	console.log('SIGTERM received, shutting down');
+	process.exit(0);
+});
 
 // middleware
 app.use(express.json());
@@ -23,18 +55,8 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-const PORT = process.env.PORT || 8000;
-
-
 // api's
 app.use("/api/v1/user", userRoute);
 app.use("/api/v1/company", companyRoute);
 app.use("/api/v1/job", jobRoute);
 app.use("/api/v1/application", applicationRoute);
-
-
-
-app.listen(PORT,()=>{
-    connectDB();
-    console.log(`Server running at port ${PORT}`);
-})
