@@ -1,13 +1,19 @@
 {
-  "name": "backend",
+  "name": "jobportal-backend",
   "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "update-browserslist": "npx update-browserslist-db@latest --update-db",
+    "postinstall": "npx update-browserslist-db@latest --update-db || true"
+  },
+  "engines": {
+    "node": ">=14"
+  },
   "description": "",
   "main": "index.js",
   "type": "module",
-  "scripts": {
-    "dev": "nodemon index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "author": "",
   "license": "ISC",
   "dependencies": {

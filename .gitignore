@@ -1,4 +1,22 @@
+# Node
 node_modules/
+npm-debug.log*
+yarn-error.log
+.pnpm-debug.log
+
+# Environment files
 .env
+backend/.env
+.env.local
+.env.*.local
+
+# Editor / OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Build directories
 dist/
 build/
+coverage/
