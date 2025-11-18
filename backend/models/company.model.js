@@ -16,7 +16,10 @@ const companySchema = new mongoose.Schema({
         type:String 
     },
     logo:{
-        type:String // URL to company logo
+        type:String // Base64 encoded company logo
+    },
+    logoMimeType:{
+        type:String // e.g., 'image/jpeg', 'image/png'
     },
     userId:{
         type:mongoose.Schema.Types.ObjectId,

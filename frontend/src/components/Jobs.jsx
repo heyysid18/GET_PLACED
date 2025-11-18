@@ -25,23 +25,34 @@ const Jobs = () => {
     }, [allJobs, searchedQuery]);
 
     return (
-        <div>
+        <div className='min-h-screen bg-gray-50'>
             <Navbar />
-            <div className='max-w-7xl mx-auto mt-5'>
-                <div className='flex gap-5'>
-                    <div className='w-20%'>
+            <div className='max-w-7xl mx-auto px-4 py-8'>
+                <div className='mb-6'>
+                    <h1 className='text-3xl font-bold text-gray-900 mb-2'>Browse Jobs</h1>
+                    <p className='text-gray-600'>Find your perfect opportunity from {filterJobs.length} available positions</p>
+                </div>
+                <div className='flex gap-6'>
+                    <div className='w-64 flex-shrink-0'>
                         <FilterCard />
                     </div>
                     {
-                        filterJobs.length <= 0 ? <span>Job not found</span> : (
-                            <div className='flex-1 h-[88vh] overflow-y-auto pb-5'>
-                                <div className='grid grid-cols-3 gap-4'>
+                        filterJobs.length <= 0 ? (
+                            <div className='flex-1 flex items-center justify-center py-20'>
+                                <div className='text-center'>
+                                    <p className='text-gray-500 text-lg mb-2'>No jobs found</p>
+                                    <p className='text-gray-400 text-sm'>Try adjusting your search or filters</p>
+                                </div>
+                            </div>
+                        ) : (
+                            <div className='flex-1 min-h-[calc(100vh-200px)]'>
+                                <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
                                     {
                                         filterJobs.map((job) => (
                                             <motion.div
-                                                initial={{ opacity: 0, x: 100 }}
-                                                animate={{ opacity: 1, x: 0 }}
-                                                exit={{ opacity: 0, x: -100 }}
+                                                initial={{ opacity: 0, y: 20 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                exit={{ opacity: 0, y: -20 }}
                                                 transition={{ duration: 0.3 }}
                                                 key={job?._id}>
                                                 <Job job={job} />
@@ -54,8 +65,6 @@ const Jobs = () => {
                     }
                 </div>
             </div>
-
-
         </div>
     )
 }

@@ -26,13 +26,15 @@ const userSchema = new mongoose.Schema({
     profile:{
         bio:{type:String},
         skills:[{type:String}],
-        resume:{type:String}, // URL to resume file
+        resume:{type:String}, // Base64 encoded resume file
         resumeOriginalName:{type:String},
+        resumeMimeType:{type:String}, // e.g., 'application/pdf', 'image/png'
         company:{type:mongoose.Schema.Types.ObjectId, ref:'Company'}, 
         profilePhoto:{
-            type:String,
+            type:String, // Base64 encoded profile photo
             default:""
-        }
+        },
+        profilePhotoMimeType:{type:String} // e.g., 'image/jpeg', 'image/png'
     },
 },{timestamps:true});
 export const User = mongoose.model('User', userSchema);

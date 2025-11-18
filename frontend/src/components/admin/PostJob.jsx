@@ -3,13 +3,14 @@ import Navbar from '../shared/Navbar'
 import { Label } from '../ui/label'
 import { Input } from '../ui/input'
 import { Button } from '../ui/button'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
 import axios from 'axios'
 import { JOB_API_END_POINT } from '@/utils/constant'
 import { toast } from 'sonner'
 import { useNavigate } from 'react-router-dom'
 import { Loader2 } from 'lucide-react'
+import { setAllJobs, setAllAdminJobs } from '@/redux/jobSlice'
 
 const companyArray = [];
 
@@ -27,6 +28,7 @@ const PostJob = () => {
     });
     const [loading, setLoading]= useState(false);
     const navigate = useNavigate();
+    const dispatch = useDispatch();
 
     const { companies } = useSelector(store => store.company);
     const changeEventHandler = (e) => {
@@ -50,6 +52,21 @@ const PostJob = () => {
             });
             if(res.data.success){
                 toast.success(res.data.message);
+                // Refetch all jobs (for students) and admin jobs (for admin view) to update the lists
+                try {
+                    const [allJobsRes, adminJobsRes] = await Promise.all([
+                        axios.get(`${JOB_API_END_POINT}/get`,{withCredentials:true}),
+                        axios.get(`${JOB_API_END_POINT}/getadminjobs`,{withCredentials:true})
+                    ]);
+                    if(allJobsRes.data.success){
+                        dispatch(setAllJobs(allJobsRes.data.jobs));
+                    }
+                    if(adminJobsRes.data.success){
+                        dispatch(setAllAdminJobs(adminJobsRes.data.jobs));
+                    }
+                } catch (error) {
+                    console.log("Error refetching jobs:", error);
+                }
                 navigate("/admin/jobs");
             }
         } catch (error) {
@@ -60,29 +77,35 @@ const PostJob = () => {
     }
 
     return (
-        <div>
+        <div className='min-h-screen bg-gray-50'>
             <Navbar />
-            <div className='flex items-center justify-center w-screen my-5'>
-                <form onSubmit = {submitHandler} className='p-8 max-w-4xl border border-gray-200 shadow-lg rounded-md'>
-                    <div className='grid grid-cols-2 gap-2'>
+            <div className='max-w-4xl mx-auto px-4 py-8'>
+                <div className='mb-6'>
+                    <h1 className='text-3xl font-bold text-gray-900 mb-2'>Post New Job</h1>
+                    <p className='text-gray-600'>Fill in the details below to create a new job posting</p>
+                </div>
+                <form onSubmit = {submitHandler} className='bg-white p-8 rounded-lg shadow-md border border-gray-200'>
+                    <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
                         <div>
-                            <Label>Title</Label>
+                            <Label className='text-gray-700 font-semibold mb-2 block'>Job Title *</Label>
                             <Input
                                 type="text"
                                 name="title"
                                 value={input.title}
                                 onChange={changeEventHandler}
-                                className="focus-visible:ring-offset-0 focus-visible:ring-0 my-1"
+                                placeholder="e.g., Senior Software Engineer"
+                                className="focus-visible:ring-[#6A38C2] focus-visible:ring-2"
                             />
                         </div>
                         <div>
-                            <Label>Description</Label>
+                            <Label className='text-gray-700 font-semibold mb-2 block'>Description *</Label>
                             <Input
                                 type="text"
                                 name="description"
                                 value={input.description}
                                 onChange={changeEventHandler}
-                                className="focus-visible:ring-offset-0 focus-visible:ring-0 my-1"
+                                placeholder="Brief job description"
+                                className="focus-visible:ring-[#6A38C2] focus-visible:ring-2"
                             />
                         </div>
                         <div>
@@ -168,10 +191,29 @@ const PostJob = () => {
                         }
                     </div> 
                     {
-                        loading ? <Button className="w-full my-4"> <Loader2 className='mr-2 h-4 w-4 animate-spin' /> Please wait </Button> : <Button type="submit" className="w-full my-4">Post New Job</Button>
+                        companies.length === 0 && (
+                            <div className='bg-red-50 border border-red-200 rounded-lg p-4 mb-6'>
+                                <p className='text-sm text-red-700 font-semibold text-center'>
+                                    ⚠️ Please register a company first before posting a job
+                                </p>
+                            </div>
+                        )
                     }
                     {
-                        companies.length === 0 && <p className='text-xs text-red-600 font-bold text-center my-3'>*Please register a company first, before posting a jobs</p>
+                        loading ? (
+                            <Button className="w-full bg-[#6A38C2] hover:bg-[#5b30a6] text-white shadow-md" disabled>
+                                <Loader2 className='mr-2 h-4 w-4 animate-spin' /> 
+                                Posting Job...
+                            </Button>
+                        ) : (
+                            <Button 
+                                type="submit" 
+                                className="w-full bg-[#6A38C2] hover:bg-[#5b30a6] text-white shadow-md hover:shadow-lg transition-all"
+                                disabled={companies.length === 0}
+                            >
+                                Post New Job
+                            </Button>
+                        )
                     }
                 </form>
             </div>
