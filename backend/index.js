@@ -18,7 +18,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 const corsOptions = {
-  origin: ["http://localhost:5173", "http://localhost:5174", "http://localhost:3000","https://get-placed-1.onrender.com"],
+  origin: "https://get-placed-1.onrender.com",
   credentials: true,
 };
 
@@ -51,5 +51,6 @@ const startServer = async () => {
     process.exit(1);
   }
 };
+
 
 startServer();
